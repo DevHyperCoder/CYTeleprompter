@@ -1,0 +1,12 @@
+<resources>
+    <!-- Change this to your app key -->
+    <string name="APP_KEY">phrrm9jymdp29t3</string>
+
+    <!-- Strings related to login -->
+    <string name="sign_in">Sign in</string>
+    <string name="title_activity_login">Sign in</string>
+    <string name="app_name">Teleprompter</string>
+    <string name="sharedPreferenceName">com.example.valdio.dropboxintegration</string>
+    <string name="valid_font_size_prompt">Please enter a valid font size</string>
+
+</resources>
