@@ -3,8 +3,9 @@ package com.codeyard.teleprompter;
 
 import android.support.annotation.NonNull;
 
-public class DataModel implements Comparable<DataModel> {
-    private String name, date;
+class DataModel implements Comparable<DataModel> {
+    private final String name;
+    private final String date;
 
     DataModel(String name, String date) {
         this.name = name;
@@ -27,10 +28,6 @@ public class DataModel implements Comparable<DataModel> {
 
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     String getDate() {

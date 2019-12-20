@@ -3,10 +3,18 @@
     <string name="APP_KEY">phrrm9jymdp29t3</string>
 
     <!-- Strings related to login -->
-    <string name="sign_in">Sign in</string>
     <string name="title_activity_login">Sign in</string>
     <string name="app_name">Teleprompter</string>
     <string name="sharedPreferenceName">com.example.valdio.dropboxintegration</string>
     <string name="valid_font_size_prompt">Please enter a valid font size</string>
+    <string name="log_in">Log in</string>
+    <string name="enter_text_size">Enter text size</string>
+    <string name="enter_font_size">Enter font size</string>
+    <string name="enter_num_lines_to_scroll">Enter num lines to scroll</string>
+    <string name="enter_num_lines">Enter num lines</string>
+    <string name="save">Save</string>
+    <string name="settings">Settings</string>
+    <string name="about">About</string>
+    <string name="valid_number">Please enter a valid number</string>
 
 </resources>

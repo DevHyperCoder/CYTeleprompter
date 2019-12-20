@@ -12,9 +12,9 @@ import android.widget.TextView;
 
 import java.util.List;
 
-public class CustomAdapterTwoTextViews extends ArrayAdapter<DataModel> {
+class CustomAdapterTwoTextViews extends ArrayAdapter<DataModel> {
 
-    private Context mContext;
+    private final Context mContext;
     private int lastPosition = -1;
 
     CustomAdapterTwoTextViews(List<DataModel> data, Context context) {

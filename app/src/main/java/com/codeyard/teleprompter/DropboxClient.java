@@ -7,6 +7,8 @@ class DropboxClient {
 
     static DbxClientV2 getClient(String ACCESS_TOKEN) {
         // Create DropBox client
+        //todo find a non deprecated method
+        //noinspection deprecation
         DbxRequestConfig config = new DbxRequestConfig("dropbox/sample-app", "en_US");
         return new DbxClientV2(config, ACCESS_TOKEN);
     }

@@ -7,10 +7,10 @@ import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.users.FullAccount;
 
 
-public class UserAccountTask extends AsyncTask<Void, Void, FullAccount> {
+class UserAccountTask extends AsyncTask<Void, Void, FullAccount> {
 
-    private DbxClientV2 dbxClient;
-    private TaskDelegate delegate;
+    private final DbxClientV2 dbxClient;
+    private final TaskDelegate delegate;
     private Exception error;
 
     UserAccountTask(DbxClientV2 dbxClient, TaskDelegate delegate) {
@@ -21,7 +21,7 @@ public class UserAccountTask extends AsyncTask<Void, Void, FullAccount> {
     @Override
     protected FullAccount doInBackground(Void... params) {
         try {
-            //get the users FullAccount
+            //get the user's FullAccount
             return dbxClient.users().getCurrentAccount();
         } catch (DbxException e) {
             e.printStackTrace();
@@ -36,7 +36,7 @@ public class UserAccountTask extends AsyncTask<Void, Void, FullAccount> {
 
         if (account != null && error == null) {
             //User Account received successfully
-            delegate.onAccountReceived(account);
+            delegate.onAccountReceived();
         } else {
             // Something went wrong
             delegate.onError(error);
@@ -44,7 +44,7 @@ public class UserAccountTask extends AsyncTask<Void, Void, FullAccount> {
     }
 
     public interface TaskDelegate {
-        void onAccountReceived(FullAccount account);
+        void onAccountReceived();
 
         void onError(Exception error);
     }

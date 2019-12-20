@@ -43,6 +43,7 @@ class DownloadFileTask extends AsyncTask<String, Void, File> {
                 mDbxClient.files().download(metadata.toLowerCase())
                         .download(outputStream);
                 MainActivity.contents = outputStream.toString();
+                TeleprompterActivity.updateContents(outputStream.toString());
             }
 
             return null;

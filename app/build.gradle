@@ -5,6 +5,7 @@ android {
     defaultConfig {
         applicationId "com.codeyard.teleprompter"
         minSdkVersion 21
+        //noinspection OldTargetApi
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
@@ -29,6 +30,6 @@ dependencies {
     implementation 'com.dropbox.core:dropbox-core-sdk:2.1.1'
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.squareup.okhttp:okhttp:2.7.5'
-    implementation 'com.squareup.okhttp3:okhttp:3.5.0'
-    implementation 'com.squareup.okhttp:okhttp:2.0.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    implementation 'com.squareup.okhttp:okhttp:2.7.5'
 }

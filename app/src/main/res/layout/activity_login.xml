@@ -10,5 +10,5 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:text="Log in" />
+        android:text="@string/log_in" />
 </RelativeLayout>

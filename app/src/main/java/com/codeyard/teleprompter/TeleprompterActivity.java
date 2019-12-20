@@ -1,7 +1,7 @@
 package com.codeyard.teleprompter;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -11,17 +11,14 @@ import android.widget.Toast;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 import static com.codeyard.teleprompter.MainActivity.TAG;
 
 public class TeleprompterActivity extends Activity {
-    WebView webView;
-    String message;
-    //Defining the Html file here. Just add the content between them
-    String textSize = "";
-    String htmlStart = "<html>\n" +
+    private static final String htmlStart = "<html>\n" +
             "<style type=\"text/css\">\n" +
             "body{\n" +
             "background-color:#000000\n" +
@@ -35,30 +32,58 @@ public class TeleprompterActivity extends Activity {
             "</style>\n" +
             "<body>\n" +
             "<p>";
-    String htmlEnd = "</p>\n" +
+    private static final String htmlEnd = "</p>\n" +
             "</body>\n" +
             "</html>";
+    @SuppressLint("StaticFieldLeak")
+    private static WebView webView;
+    @SuppressLint("StaticFieldLeak")
+    private static TeleprompterActivity teleprompterActivity;
+    private String message;
+    private ServerClass serverClass;
+    private BrightnessManager brightnessManager;
+    private int oldBrightness;
+
+    /**
+     * Updates the WebView with the new content
+     *
+     * @param message The new content
+     */
+    static void updateContents(final String message) {
+        teleprompterActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                MainActivity.contents = message;
+                String htmlString = htmlStart + MainActivity.contents + htmlEnd;
+                webView.loadData(htmlString, "text/html", "UTF-8");
+            }
+        });
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        teleprompterActivity = TeleprompterActivity.this;
         setContentView(R.layout.activity_teleprompter);
         webView = findViewById(R.id.scroll);
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(TeleprompterActivity.this);
-        textSize = sharedPreferences.getString(SettingsActivity.FONT_SIZE, "50");
+
+        //Defining the Html file here. Just add the content between them
         String htmlString = htmlStart + MainActivity.contents + htmlEnd;
         webView.loadData(htmlString, "text/html", "UTF-8");
-        Thread mThread = new Thread(new ServerClass());
+
+        brightnessManager = new BrightnessManager();
+        oldBrightness = brightnessManager.readBrightness(TeleprompterActivity.this);
+        brightnessManager.setBrightness(TeleprompterActivity.this, 100);
+        serverClass = new ServerClass();
+        Thread mThread = new Thread(serverClass);
         mThread.start();
     }
 
-//    String generateHtml() {
-//        return htmlStart + textSize + htmlAfterTextSize + MainActivity.contents + htmlEnd;
-//    }
 
-    void handleScrolling(final int numLines, final boolean next) {
+    private void handleScrolling(final int numLines, final boolean next) {
         int currPosition = webView.getScrollY();
-        int textSize = 36;
+        int textSize = 50;
         if (next) {
             int newPos = currPosition + (textSize * numLines);
             webView.scrollTo(0, newPos);
@@ -74,11 +99,21 @@ public class TeleprompterActivity extends Activity {
 
     }
 
-    void handleMessage(String message) {
-        Log.e(TAG, "handleMessage: " + message);
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        brightnessManager.setBrightness(TeleprompterActivity.this, oldBrightness);
+        serverClass.stopSocket();
+
+    }
+
+    private void handleMessages(String message) {
+        final int numLine = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this)
+                .getString(SettingsActivity.NUM_LINES, "3"));
         if (message.contains("NEXT:")) {
             try {
-                final int numLine = Integer.parseInt(message.substring(5));
+
+
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -88,33 +123,46 @@ public class TeleprompterActivity extends Activity {
                 handleScrolling(numLine, true);
             } catch (NumberFormatException nFE) {
                 nFE.printStackTrace();
+                Log.e(TAG, "handleMessages: Number Format Exception", nFE);
                 Toast.makeText(TeleprompterActivity.this, "Number Format Exception", Toast.LENGTH_SHORT).show();
             }
         }
         if (message.contains("BACK:")) {
             try {
-                int numLine = Integer.parseInt(message.substring(5));
                 handleScrolling(numLine, false);
             } catch (NumberFormatException nFE) {
                 nFE.printStackTrace();
+                Log.e(TAG, "handleMessages: Number Format Exception", nFE);
                 Toast.makeText(TeleprompterActivity.this, "Number Format Exception", Toast.LENGTH_SHORT).show();
             }
         }
 
     }
 
-    public class ServerClass implements Runnable {
+    class ServerClass implements Runnable, Serializable {
         ServerSocket serverSocket;
         Socket socket;
         DataInputStream dataInputStream;
         String receivedData;
-        Handler handler = new Handler();
+        final Handler handler = new Handler();
+
+        void stopSocket() {
+            try {
+                if (serverSocket != null) {
+                    serverSocket.close();
+                }
+                if (socket != null) {
+                    socket.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
         @Override
         public void run() {
             try {
                 serverSocket = new ServerSocket(8080);
-                Log.e("TELE", "WAITIN FOR CLIENT");
                 //noinspection InfiniteLoopStatement
                 while (true) {
                     socket = serverSocket.accept();
@@ -124,9 +172,11 @@ public class TeleprompterActivity extends Activity {
                         @Override
                         public void run() {
                             message = receivedData;
-                            handleMessage(message);
+                            handleMessages(message);
+
                         }
                     });
+
                 }
             } catch (IOException e) {
                 e.printStackTrace();

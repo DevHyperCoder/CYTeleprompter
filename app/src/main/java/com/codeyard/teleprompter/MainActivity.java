@@ -20,7 +20,6 @@ import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.ListFolderResult;
-import com.dropbox.core.v2.users.FullAccount;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,14 +32,10 @@ import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
-    static String TAG = "TELEPROMPTER";
+    static final String TAG = "TELEPROMPTER";
     static String contents;
-    String dropboxPath = "/Apps/Parrot Teleprompter/";
-    String txtExtension = ".txt";
-    List<String> dateList;
-    List<String> nameList;
-    List<DataModel> dataModelList;
-    DbxClientV2 client;
+    private List<DataModel> dataModelList;
+    private DbxClientV2 client;
     private String ACCESS_TOKEN;
 
     @Override
@@ -48,18 +43,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         enableStrictMode();
-        dateList = new ArrayList<>();
-        nameList = new ArrayList<>();
+
         dataModelList = new ArrayList<>();
         //Check if a token exists and send to login activity if not
         if (!tokenExists()) {
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
         }
-
         //get the dropbox account
         ACCESS_TOKEN = retrieveAccessToken();
         getUserAccount();
+        //noinspection deprecation
         DbxRequestConfig config = new DbxRequestConfig("Teleprompter Client", "en_US");
 
         client = new DbxClientV2(config, ACCESS_TOKEN);
@@ -80,8 +74,6 @@ public class MainActivity extends AppCompatActivity {
                     if (filename.contains(".txt")) { //check if the file is a txt file
                         String finalDate = date.substring(0, date.indexOf('T'));
                         String finalFileName = filename.substring(0, filename.indexOf(".txt"));
-                        dateList.add(finalDate);
-                        nameList.add(finalFileName);
                         dataModelList.add(new DataModel(finalFileName, finalDate));
                     }
                 } catch (StringIndexOutOfBoundsException stringIndexOutOfBoundException) {
@@ -117,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
     /***
      * Enables Strict Mode
      */
-    public void enableStrictMode() {
+    private void enableStrictMode() {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
     }
@@ -125,11 +117,11 @@ public class MainActivity extends AppCompatActivity {
     /***
      *Gets the user account
      */
-    protected void getUserAccount() {
+    private void getUserAccount() {
         if (ACCESS_TOKEN == null) return;
         new UserAccountTask(DropboxClient.getClient(ACCESS_TOKEN), new UserAccountTask.TaskDelegate() {
             @Override
-            public void onAccountReceived(FullAccount account) {
+            public void onAccountReceived() {
                 Log.d(TAG, "Account details received successfully");
             }
 
@@ -147,6 +139,8 @@ public class MainActivity extends AppCompatActivity {
      * Downloads the specified file from dropbox
      */
     private void downloadFile(String file) {
+        String dropboxPath = "/Apps/Parrot Teleprompter/";
+        String txtExtension = ".txt";
         file = dropboxPath + file + txtExtension;
         final ProgressDialog dialog = new ProgressDialog(this);
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);

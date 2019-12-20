@@ -3,8 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/Black"
-    tools:context="com.codeyard.teleprompter.TeleprompterActivity">
-
+    tools:context="com.codeyard.teleprompter.TeleprompterActivity"
+    tools:ignore="Overdraw">
 
     <WebView
         android:id="@+id/scroll"

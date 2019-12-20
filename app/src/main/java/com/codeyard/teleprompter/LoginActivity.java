@@ -31,10 +31,11 @@ public class LoginActivity extends Activity {
         getAccessToken();
     }
 
-    public void getAccessToken() {
+    private void getAccessToken() {
         String accessToken = Auth.getOAuth2Token(); //generate Access Token
         if (accessToken != null) {
             //Store accessToken in SharedPreferences
+            //change this
             SharedPreferences prefs = getSharedPreferences("com.example.valdio.dropboxintegration", Context.MODE_PRIVATE);
             prefs.edit().putString("access-token", accessToken).apply();
 
