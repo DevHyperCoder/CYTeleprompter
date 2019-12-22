@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     tools:context=".SettingsActivity">
+
 
     <TextView
         android:id="@+id/font_size_text_view"
@@ -12,42 +15,56 @@
         android:text="@string/enter_text_size"
         android:textSize="32sp" />
 
-    <EditText
-        android:id="@+id/editTextFontSize"
-        android:layout_width="221dp"
-        android:layout_height="63dp"
-        android:ems="10"
-        android:layout_below="@id/font_size_text_view"
-        android:hint="@string/enter_font_size"
-        android:inputType="number"
-        android:textSize="32sp"
-        tools:ignore="Autofill" />
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/enter_font_size">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextFontSize"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/font_size_text_view"
+            android:ems="10"
+            android:inputType="number"
+            android:textSize="32sp"
+            app:errorEnabled="true"
+            tools:ignore="Autofill" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
 
     <TextView
         android:id="@+id/num_lines_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/editTextFontSize"
         android:layout_marginTop="20sp"
         android:text="@string/enter_num_lines_to_scroll"
         android:textSize="32sp"
         tools:ignore="Autofill" />
 
-    <EditText
-        android:id="@+id/num_lines_edit_text"
-        android:layout_width="221dp"
-        android:layout_height="63dp"
-        android:layout_below="@id/num_lines_text_view"
-        android:ems="10"
-        android:hint="@string/enter_num_lines"
-        android:textSize="32sp"
-        android:inputType="number"
-        tools:ignore="Autofill" />
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/enter_num_lines">
 
-    <Button
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/num_lines_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="number"
+            android:textSize="32sp"
+            tools:ignore="Autofill" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/save_button"
-        android:layout_width="447dp"
-        android:layout_height="79dp"
-        android:layout_alignParentBottom="true"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:text="@string/save" />
-</RelativeLayout>
+</LinearLayout>

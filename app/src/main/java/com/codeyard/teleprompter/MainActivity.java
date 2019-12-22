@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,6 +29,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 
 public class MainActivity extends AppCompatActivity {
     static final String TAG = "TELEPROMPTER";
@@ -43,7 +44,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         enableStrictMode();
-
+        com.google.android.material.appbar.AppBarLayout toolbar = findViewById(R.id.tool);
+        toolbar.setBackgroundColor(getResources().getColor(R.color.colorAccent));
         dataModelList = new ArrayList<>();
         //Check if a token exists and send to login activity if not
         if (!tokenExists()) {

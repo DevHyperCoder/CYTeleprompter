@@ -1,7 +1,7 @@
 package com.codeyard.teleprompter;
 
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 class DataModel implements Comparable<DataModel> {
     private final String name;
