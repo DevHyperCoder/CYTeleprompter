@@ -1,20 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.codeyard.teleprompter.MainActivity">
 
-    <com.google.android.material.appbar.AppBarLayout
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/tool"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/tool"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:background="@color/primary"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark" />
 
 
-    </com.google.android.material.appbar.AppBarLayout>
+    <TextView
+        android:id="@+id/response"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tool" />
 
-    <include layout="@layout/content_main" />
 
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/response">
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+        <ListView
+            android:id="@+id/listViewForFiles"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/response" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/adView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        ads:adSize="BANNER"
+        ads:adUnitId="ca-app-pub-1367393062330218/6662095557" />
+
+</RelativeLayout>

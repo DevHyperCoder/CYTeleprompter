@@ -6,10 +6,14 @@ import androidx.annotation.NonNull;
 class DataModel implements Comparable<DataModel> {
     private final String name;
     private final String date;
+    static int LOCATION_INTERNAL = 2;
+    static int LOCATION_DROPBOX = 1;
+    private final int location;
 
-    DataModel(String name, String date) {
+    DataModel(String name, String date, int location) {
         this.name = name;
         this.date = date;
+        this.location = location;
     }
 //    public void setMetadata(FileMetadata metadata){
 //        this.fileMetadata=metadata;
@@ -34,6 +38,9 @@ class DataModel implements Comparable<DataModel> {
         return date;
     }
 
+    int getLocation() {
+        return location;
+    }
 //    public void setDate(String date) {
 //        this.date = date;
 //    }

@@ -3,39 +3,50 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".SettingsActivity">
 
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/settings_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/primary"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark" />
 
     <TextView
         android:id="@+id/font_size_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20sp"
         android:text="@string/enter_text_size"
         android:textSize="32sp" />
+    <!--todo add material theming-->
 
-    <com.google.android.material.textfield.TextInputLayout
+
+    <SeekBar
+        android:id="@+id/seekBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/enter_font_size">
+        android:progress="50" />
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editTextFontSize"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/font_size_text_view"
-            android:ems="10"
-            android:inputType="number"
-            android:textSize="32sp"
-            app:errorEnabled="true"
-            tools:ignore="Autofill" />
+            android:orientation="vertical">
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <TextView
+                android:id="@+id/textPreview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/your_text_will_appear_this_big" />
 
 
     <TextView
+
         android:id="@+id/num_lines_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -60,11 +71,24 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/mirror_mode_switch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/mirror_mode"
+                android:textSize="32sp"
+
+                />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/save_button"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginTop="30sp"
         android:text="@string/save" />
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

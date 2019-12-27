@@ -2,6 +2,7 @@ package com.codeyard.teleprompter;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Objects;
 
 import static com.codeyard.teleprompter.MainActivity.TAG;
 
@@ -26,15 +28,20 @@ public class TeleprompterActivity extends Activity {
             "p{\n" +
             "color: #FFFFFF;\n" +
             "font-family: verdana;\n" +
-            "\t\t\tfont-size: 50px;\n" +
-            "\t\t\t transform: scale(-1, 1);\n" +//This is the one that mirrors the text
-            "}\n" +
-            "</style>\n" +
-            "<body>\n" +
-            "<p>";
+
+            "\t\t\tfont-size: ";
+    private static final String fontSizeBreakEnd = "px;\n";
     private static final String htmlEnd = "</p>\n" +
             "</body>\n" +
             "</html>";
+    static String mirrorHTML = "\t\t\t transform: scale(-1, 1);\n";//This is the one that mirrors the text
+    static String afterMirrorHTML = "}\n" +
+            "</style>\n" +
+            "<body>\n" +
+            "<p>";
+    static String MIRROR_ENABLED = "MIRROR_ENABLED";
+    static boolean mirror;
+    static String font_size;
     @SuppressLint("StaticFieldLeak")
     private static WebView webView;
     @SuppressLint("StaticFieldLeak")
@@ -54,11 +61,21 @@ public class TeleprompterActivity extends Activity {
             @Override
             public void run() {
                 MainActivity.contents = message;
-                String htmlString = htmlStart + MainActivity.contents + htmlEnd;
-                webView.loadData(htmlString, "text/html", "UTF-8");
+                Log.d(TAG, "run: " + generateHTML(mirror, font_size, message));
+                webView.loadData(generateHTML(mirror, font_size, message), "text/html", "UTF-8");
             }
         });
 
+    }
+
+    static String generateHTML(boolean mirrorMode, String fontSize, String contents) {
+        if (mirrorMode) {
+            String gtml = htmlStart + fontSize + fontSizeBreakEnd + mirrorHTML + afterMirrorHTML + contents + htmlEnd;
+            Log.d(TAG, "generateHTML: " + gtml);
+            return htmlStart + fontSize + fontSizeBreakEnd + mirrorHTML + afterMirrorHTML + contents + htmlEnd;
+        }
+        String html = htmlStart + fontSize + fontSizeBreakEnd + afterMirrorHTML + contents + htmlEnd;
+        return htmlStart + fontSize + fontSizeBreakEnd + afterMirrorHTML + contents + htmlEnd;
     }
 
     @Override
@@ -68,9 +85,13 @@ public class TeleprompterActivity extends Activity {
         setContentView(R.layout.activity_teleprompter);
         webView = findViewById(R.id.scroll);
 
-        //Defining the Html file here. Just add the content between them
-        String htmlString = htmlStart + MainActivity.contents + htmlEnd;
-        webView.loadData(htmlString, "text/html", "UTF-8");
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(TeleprompterActivity.this);
+
+        mirror = sharedPreferences.getBoolean(MIRROR_ENABLED, true);
+        font_size = sharedPreferences.getString(SettingsActivity.FONT_SIZE, "50");
+        Log.d(TAG, "onCreate: " + font_size + " " + mirror);
+
+        webView.loadData(generateHTML(mirror, font_size, MainActivity.contents), "text/html", "UTF-8");
 
         brightnessManager = new BrightnessManager();
         oldBrightness = brightnessManager.readBrightness(TeleprompterActivity.this);
@@ -108,19 +129,16 @@ public class TeleprompterActivity extends Activity {
     }
 
     private void handleMessages(String message) {
-        final int numLine = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this)
-                .getString(SettingsActivity.NUM_LINES, "3"));
+        final int numLine = Integer.parseInt(Objects.requireNonNull(PreferenceManager.getDefaultSharedPreferences(this)
+                .getString(SettingsActivity.NUM_LINES, "3")));
         if (message.contains("NEXT:")) {
             try {
-
-
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         handleScrolling(numLine, true);
                     }
                 });
-                handleScrolling(numLine, true);
             } catch (NumberFormatException nFE) {
                 nFE.printStackTrace();
                 Log.e(TAG, "handleMessages: Number Format Exception", nFE);
@@ -140,11 +158,11 @@ public class TeleprompterActivity extends Activity {
     }
 
     class ServerClass implements Runnable, Serializable {
+        final Handler handler = new Handler();
         ServerSocket serverSocket;
         Socket socket;
         DataInputStream dataInputStream;
         String receivedData;
-        final Handler handler = new Handler();
 
         void stopSocket() {
             try {

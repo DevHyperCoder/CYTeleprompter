@@ -30,7 +30,7 @@ class BrightnessManager {
 
     int readBrightness(Context context) {
         try {
-            return Settings.System.getInt(context.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS);
+            return ((Settings.System.getInt(context.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS) / 255) * 100);
         } catch (Settings.SettingNotFoundException e) {
             e.printStackTrace();
         }

@@ -16,5 +16,8 @@
     <string name="settings">Settings</string>
     <string name="about">About</string>
     <string name="valid_number">Please enter a valid number</string>
+    <string name="save_file_to_device">Save file to device</string>
+    <string name="your_text_will_appear_this_big">Your text will appear this big</string>
+    <string name="mirror_mode">Mirror Mode</string>
 
 </resources>
