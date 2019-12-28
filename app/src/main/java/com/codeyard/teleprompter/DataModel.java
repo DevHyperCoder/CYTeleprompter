@@ -6,8 +6,8 @@ import androidx.annotation.NonNull;
 class DataModel implements Comparable<DataModel> {
     private final String name;
     private final String date;
-    static int LOCATION_INTERNAL = 2;
-    static int LOCATION_DROPBOX = 1;
+    static final int LOCATION_INTERNAL = 2;
+    static final int LOCATION_DROPBOX = 1;
     private final int location;
 
     DataModel(String name, String date, int location) {

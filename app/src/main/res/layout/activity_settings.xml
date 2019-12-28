@@ -20,11 +20,10 @@
         android:layout_marginTop="20sp"
         android:text="@string/enter_text_size"
         android:textSize="32sp" />
-    <!--todo add material theming-->
 
 
     <SeekBar
-        android:id="@+id/seekBar"
+        android:id="@+id/seekbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:progress="50" />

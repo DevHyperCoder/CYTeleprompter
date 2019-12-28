@@ -22,7 +22,7 @@ import androidx.appcompat.widget.Toolbar;
 public class SettingsActivity extends AppCompatActivity {
     static final String NUM_LINES = "NUM_LINES";
     static final String FONT_SIZE = "FONT-SIZE";
-    boolean mirror;
+    private boolean mirror;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,7 +30,7 @@ public class SettingsActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.settings_toolbar);
         setSupportActionBar(toolbar);
         final TextView textView = findViewById(R.id.textPreview);
-        final SeekBar fontSizeEditText = findViewById(R.id.seekBar);
+        final SeekBar fontSizeEditText = findViewById(R.id.seekbar);
         final EditText numScrollLineEditText = findViewById(R.id.num_lines_edit_text);
         final SwitchMaterial mirrorModeToggleButton = findViewById(R.id.mirror_mode_switch);
 

@@ -37,8 +37,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -52,30 +50,21 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 public class MainActivity extends AppCompatActivity {
     static final String TAG = "TELEPROMPTER";
     static String contents;
-    FloatingActionButton fab;
-    CustomAdapterTwoTextViews customAdapterTwoTextViews;
+    private CustomAdapterTwoTextViews customAdapterTwoTextViews;
+    private FileOperator fileOperator;
     private List<DataModel> dataModelList;
     private DbxClientV2 client;
     private String ACCESS_TOKEN;
 
-    public boolean isConnected() {
+    private boolean isConnected() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         //we are connected to a network
-        return connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
-                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED;
+        return connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() != NetworkInfo.State.CONNECTED &&
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() != NetworkInfo.State.CONNECTED;
 
     }
 
-    @SuppressLint("ClickableViewAccessibility")
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.content_main);
-        enableStrictMode();
-        dataModelList = new ArrayList<>();
-        Toolbar toolbar = findViewById(R.id.tool);
-        setSupportActionBar(toolbar);
-
+    private void loadAds() {
         MobileAds.initialize(this, new OnInitializationCompleteListener() {
             @Override
             public void onInitializationComplete(InitializationStatus initializationStatus) {
@@ -84,8 +73,23 @@ public class MainActivity extends AppCompatActivity {
         AdView mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.content_main);
+        enableStrictMode();
+        loadAds();
+        fileOperator = new FileOperator(MainActivity.this);
+        dataModelList = new ArrayList<>();
+        Toolbar toolbar = findViewById(R.id.tool);
+        setSupportActionBar(toolbar);
+
+
         //check if internet connection
-        if (!isConnected()) {
+        if (isConnected()) {
             //show the dialog
             new MaterialAlertDialogBuilder(MainActivity.this)
                     .setTitle("Not Connected to Network")
@@ -101,20 +105,21 @@ public class MainActivity extends AppCompatActivity {
 
         }
         getContents();
-//read the list of files form the internal storage
+        //read the list of files form the internal storage
         getInternalStorageFiles();
+        //parse the dates into ascending order
+        Collections.sort(dataModelList, Collections.<DataModel>reverseOrder());
         //add the data to the listView and add a onItemClick Listener
-        ListView listView = findViewById(R.id.listViewForFiles);
+        final ListView listView;
+        listView = findViewById(R.id.listViewForFiles);
         if (dataModelList.size() > 0) {
             CustomAdapterTwoTextViews customAdapterTwoTextViews = new CustomAdapterTwoTextViews(dataModelList, MainActivity.this);
             listView.setAdapter(customAdapterTwoTextViews);
         } else {
 
-            dataModelList.add(new DataModel("Sorry! No contetns found", "", DataModel.LOCATION_DROPBOX));
-
+            dataModelList.add(new DataModel("Sorry! No contents found", "", DataModel.LOCATION_DROPBOX));
             customAdapterTwoTextViews = new CustomAdapterTwoTextViews(dataModelList, MainActivity.this);
             listView.setAdapter(customAdapterTwoTextViews);
-            listView.setClickable(false);
         }
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -133,7 +138,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        //todo add te long click to remove right now only applicable for internal storage
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> arg0, View arg1, final int position, long arg3) {
@@ -143,17 +147,25 @@ public class MainActivity extends AppCompatActivity {
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
+                                File f = MainActivity.this.getFilesDir();
+                                Log.d(TAG, "onClick: " + Arrays.toString(f.list()));//getting the list of files in string array
+                                fileOperator.delete(dataModelList.get(position).getName());
                                 dataModelList.remove(position);
-//delete the file
-                                if (customAdapterTwoTextViews != null) {
-                                    customAdapterTwoTextViews.notifyDataSetChanged();
+                                if (dataModelList.size() > 0) {
+                                    CustomAdapterTwoTextViews customAdapterTwoTextViews = new CustomAdapterTwoTextViews(dataModelList, MainActivity.this);
+                                    listView.setAdapter(customAdapterTwoTextViews);
+                                } else {
+
+                                    dataModelList.add(new DataModel("Sorry! No contents found", "", DataModel.LOCATION_DROPBOX));
+                                    customAdapterTwoTextViews = new CustomAdapterTwoTextViews(dataModelList, MainActivity.this);
+                                    listView.setAdapter(customAdapterTwoTextViews);
                                 }
+                                Log.d(TAG, "onClick: " + Arrays.toString(f.list()));//getting the list of files in string array
+
                             }
                         })
                         .setNegativeButton("No", null)
                         .show();
-
-
                 return true;
             }
         });
@@ -169,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
-        fab = findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -178,71 +190,40 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    void readFile(String name) {
+
+    /**
+     * @param name name of the file
+     */
+    private void readFile(String name) {
         //reading text from file
-        try {
-            Log.d(TAG, "readFile: filename" + name + ".txt");
-            FileInputStream fileIn = openFileInput(name + ".txt");
-            InputStreamReader InputRead = new InputStreamReader(fileIn);
-
-            int READ_BLOCK_SIZE = 1000;
-            char[] inputBuffer = new char[READ_BLOCK_SIZE];
-            StringBuilder s = new StringBuilder();
-            int charRead;
-
-            while ((charRead = InputRead.read(inputBuffer)) > 0) {
-                // char to string conversion
-                s.append(String.copyValueOf(inputBuffer, 0, charRead));
-            }
-            InputRead.close();
-            String file = s.toString();
-            int indexOfSemicolon = file.indexOf(";");
-            String date = file.substring(0, indexOfSemicolon);
-            file = file.substring(indexOfSemicolon + 1);
-            MainActivity.contents = file;
-            TeleprompterActivity.updateContents(file);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.d(TAG, "readFile: Some error", e);
-        }
+        String file = fileOperator.readFromFile(name);
+        int indexOfSemicolon = file.indexOf(";");
+        file = file.substring(indexOfSemicolon + 1);
+        MainActivity.contents = file;
+        //    TeleprompterActivity.updateContents(file);
     }
 
     /***
      * Gets the contents from internal storage
      */
-    //todo fix the bu where the date doesnt show
-    void getInternalStorageFiles() {
+    private void getInternalStorageFiles() {
         File f = MainActivity.this.getFilesDir();
         String[] values = f.list();//getting the list of files in string array
-        Log.d(TAG, "getInternalStorageFiles: " + Arrays.toString(values));
-        String date = "";
+        String date;
         for (String s : values) {
             try {
-                Log.d(TAG, "getInternalStorageFiles: filename" + s);
-                s = s.trim();
-                s = s.replace(" ", "");
-                FileInputStream fileIn = new FileInputStream(s);
-                InputStreamReader InputRead = new InputStreamReader(fileIn);
-
-                int READ_BLOCK_SIZE = 1000;
-                char[] inputBuffer = new char[READ_BLOCK_SIZE];
-                StringBuilder stringBuilder = new StringBuilder();
-                int charRead;
-
-                while ((charRead = InputRead.read(inputBuffer)) > 0) {
-                    // char to string conversion
-                    stringBuilder.append(String.copyValueOf(inputBuffer, 0, charRead));
-                }
-                InputRead.close();
-                String data = stringBuilder.toString();
+                String data = fileOperator.readFromFile(s.replace(".txt", ""));
                 int indexOfSemicolon = data.indexOf(";");
-                date = data.substring(0, indexOfSemicolon);
+                if (indexOfSemicolon > 0) {
+                    date = data.substring(0, indexOfSemicolon);
+                } else {
+                    date = "";
+                }
+                Log.d(TAG, "getInternalStorageFiles: date " + date);
+                dataModelList.add(new DataModel(s.replace(".txt", ""), date, DataModel.LOCATION_INTERNAL));
             } catch (Exception e) {
-                e.printStackTrace();
-                Log.d(TAG, "readFile: Some error", e);
+                Log.d(TAG, "getInternalStorageFiles: some error", e);
             }
-            Log.d(TAG, "getInternalStorageFiles: date " + date);
-            dataModelList.add(new DataModel(s.replace(".txt", ""), date, DataModel.LOCATION_INTERNAL));
         }
     }
 
@@ -253,17 +234,26 @@ public class MainActivity extends AppCompatActivity {
         dataModelList.clear();
         getContents();
         getInternalStorageFiles();
-        if (customAdapterTwoTextViews != null) {
-            customAdapterTwoTextViews.notifyDataSetChanged();
+        Collections.sort(dataModelList, Collections.<DataModel>reverseOrder());
+        if (dataModelList.size() > 0) {
+            CustomAdapterTwoTextViews customAdapterTwoTextViews = new CustomAdapterTwoTextViews(dataModelList, MainActivity.this);
+            ListView lio = findViewById(R.id.listViewForFiles);
+            lio.setAdapter(customAdapterTwoTextViews);
+        } else {
+
+            dataModelList.add(new DataModel("Sorry! No contents found", "", DataModel.LOCATION_DROPBOX));
+            customAdapterTwoTextViews = new CustomAdapterTwoTextViews(dataModelList, MainActivity.this);
+            ListView lio = findViewById(R.id.listViewForFiles);
+            lio.setAdapter(customAdapterTwoTextViews);
         }
     }
 
     /***
      * Gets the contents from dropbox
      */
-    public void getContents() {
+    private void getContents() {
         //Check if a token exists and send to login activity if not
-        if (!isConnected()) {
+        if (isConnected()) {
             return;
         }
         if (!tokenExists()) {
@@ -305,8 +295,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (DbxException | JSONException e) {
             e.printStackTrace();
         }
-        //parse the dates into ascending order
-        Collections.sort(dataModelList, Collections.<DataModel>reverseOrder());
+
     }
 
     /***
@@ -415,18 +404,15 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.settings:
-                Intent i = new Intent(MainActivity.this, SettingsActivity.class);
-                startActivity(i);
-                return true;
-            case R.id.about:
-                Intent intent = new Intent(MainActivity.this, AboutActivity.class);
-                startActivity(intent);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.settings) {
+            startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+            return true;
+//            case R.id.about:
+//                Intent intent = new Intent(MainActivity.this, AboutActivity.class);
+//                startActivity(intent);
+//                return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
 }

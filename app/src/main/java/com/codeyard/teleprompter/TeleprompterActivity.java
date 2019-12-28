@@ -34,14 +34,14 @@ public class TeleprompterActivity extends Activity {
     private static final String htmlEnd = "</p>\n" +
             "</body>\n" +
             "</html>";
-    static String mirrorHTML = "\t\t\t transform: scale(-1, 1);\n";//This is the one that mirrors the text
-    static String afterMirrorHTML = "}\n" +
+    static final String MIRROR_ENABLED = "MIRROR_ENABLED";
+    private static final String mirrorHTML = "\t\t\t transform: scale(-1, 1);\n";//This is the one that mirrors the text
+    private static final String afterMirrorHTML = "}\n" +
             "</style>\n" +
             "<body>\n" +
             "<p>";
-    static String MIRROR_ENABLED = "MIRROR_ENABLED";
-    static boolean mirror;
-    static String font_size;
+    private static boolean mirror;
+    private static String font_size;
     @SuppressLint("StaticFieldLeak")
     private static WebView webView;
     @SuppressLint("StaticFieldLeak")
@@ -68,13 +68,10 @@ public class TeleprompterActivity extends Activity {
 
     }
 
-    static String generateHTML(boolean mirrorMode, String fontSize, String contents) {
+    private static String generateHTML(boolean mirrorMode, String fontSize, String contents) {
         if (mirrorMode) {
-            String gtml = htmlStart + fontSize + fontSizeBreakEnd + mirrorHTML + afterMirrorHTML + contents + htmlEnd;
-            Log.d(TAG, "generateHTML: " + gtml);
             return htmlStart + fontSize + fontSizeBreakEnd + mirrorHTML + afterMirrorHTML + contents + htmlEnd;
         }
-        String html = htmlStart + fontSize + fontSizeBreakEnd + afterMirrorHTML + contents + htmlEnd;
         return htmlStart + fontSize + fontSizeBreakEnd + afterMirrorHTML + contents + htmlEnd;
     }
 
