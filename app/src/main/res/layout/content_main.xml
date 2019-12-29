@@ -15,6 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
+        android:src="@drawable/ic_note_add_24px"
         android:layout_margin="16dp" />
     <!--todo add the src-->
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

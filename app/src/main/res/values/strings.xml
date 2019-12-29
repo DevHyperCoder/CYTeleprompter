@@ -20,5 +20,9 @@
     <string name="your_text_will_appear_this_big">Your text will appear this big</string>
     <string name="mirror_mode">Mirror Mode</string>
     <string name="enter_file_title">Enter file title</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="light_mode">Light Mode</string>
+    <string name="theme">Theme</string>
+    <string name="upload_files_to_dropbox">Upload files to dropbox</string>
 
 </resources>

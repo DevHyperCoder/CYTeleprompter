@@ -5,6 +5,10 @@
     <item
         android:id="@+id/settings"
         android:title="@string/settings" />
+
+    <item
+        android:id="@+id/upload"
+        android:title="@string/upload_files_to_dropbox" />
     <!--    <item-->
     <!--        android:id="@+id/about"-->
     <!--        android:title="@string/about" />-->

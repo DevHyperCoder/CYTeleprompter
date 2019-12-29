@@ -49,12 +49,16 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 public class MainActivity extends AppCompatActivity {
     static final String TAG = "TELEPROMPTER";
+    static final String THEME = "THEME";
+    static final int LIGHT_MODE = 0;
+    static final int DARK_MODE = 1;
+    //static final int USER_THEME_MODE = 2;
     static String contents;
+    static String ACCESS_TOKEN;
     private CustomAdapterTwoTextViews customAdapterTwoTextViews;
     private FileOperator fileOperator;
     private List<DataModel> dataModelList;
     private DbxClientV2 client;
-    private String ACCESS_TOKEN;
 
     private boolean isConnected() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -75,9 +79,25 @@ public class MainActivity extends AppCompatActivity {
         mAdView.loadAd(adRequest);
     }
 
+//    void setTheme() {
+//        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+//        int userTheme = sharedPreferences.getInt(THEME, DARK_MODE);
+//        switch (userTheme) {
+//            case DARK_MODE:
+//                //dark mode
+//                setTheme(R.style.AppTheme);
+//                break;
+//
+//            case LIGHT_MODE:
+//                setTheme(R.style.AppTheme_Light);
+//
+//        }
+//    }
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // setTheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_main);
         enableStrictMode();
@@ -141,31 +161,39 @@ public class MainActivity extends AppCompatActivity {
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> arg0, View arg1, final int position, long arg3) {
-                new MaterialAlertDialogBuilder(MainActivity.this)
-                        .setTitle("Are you sure??")
-                        .setMessage("Are you sure that you want to delete the file \"" + dataModelList.get(position).getName() + "\"?")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                File f = MainActivity.this.getFilesDir();
-                                Log.d(TAG, "onClick: " + Arrays.toString(f.list()));//getting the list of files in string array
-                                fileOperator.delete(dataModelList.get(position).getName());
-                                dataModelList.remove(position);
-                                if (dataModelList.size() > 0) {
-                                    CustomAdapterTwoTextViews customAdapterTwoTextViews = new CustomAdapterTwoTextViews(dataModelList, MainActivity.this);
-                                    listView.setAdapter(customAdapterTwoTextViews);
-                                } else {
+                if (dataModelList.get(position).getLocation() == DataModel.LOCATION_INTERNAL) {
+                    new MaterialAlertDialogBuilder(MainActivity.this)
+                            .setTitle("Are you sure??")
+                            .setMessage("Are you sure that you want to delete the file \"" + dataModelList.get(position).getName() + "\"?")
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    File f = MainActivity.this.getFilesDir();
+                                    Log.d(TAG, "onClick: " + Arrays.toString(f.list()));//getting the list of files in string array
+                                    fileOperator.delete(dataModelList.get(position).getName());
+                                    dataModelList.remove(position);
+                                    if (dataModelList.size() > 0) {
+                                        CustomAdapterTwoTextViews customAdapterTwoTextViews = new CustomAdapterTwoTextViews(dataModelList, MainActivity.this);
+                                        listView.setAdapter(customAdapterTwoTextViews);
+                                    } else {
 
-                                    dataModelList.add(new DataModel("Sorry! No contents found", "", DataModel.LOCATION_DROPBOX));
-                                    customAdapterTwoTextViews = new CustomAdapterTwoTextViews(dataModelList, MainActivity.this);
-                                    listView.setAdapter(customAdapterTwoTextViews);
+                                        dataModelList.add(new DataModel("Sorry! No contents found", "", DataModel.LOCATION_DROPBOX));
+                                        customAdapterTwoTextViews = new CustomAdapterTwoTextViews(dataModelList, MainActivity.this);
+                                        listView.setAdapter(customAdapterTwoTextViews);
+                                    }
+                                    Log.d(TAG, "onClick: " + Arrays.toString(f.list()));//getting the list of files in string array
+
                                 }
-                                Log.d(TAG, "onClick: " + Arrays.toString(f.list()));//getting the list of files in string array
-
-                            }
-                        })
-                        .setNegativeButton("No", null)
-                        .show();
+                            })
+                            .setNegativeButton("No", null)
+                            .show();
+                } else {
+                    new MaterialAlertDialogBuilder(MainActivity.this)
+                            .setTitle("Sorry!")
+                            .setMessage("Sorry this file can not be deleted as it is located in dropbox. Deleting files from dropbox feature will be added soon")
+                            .setPositiveButton("Ok", null)
+                            .show();
+                }
                 return true;
             }
         });
@@ -411,6 +439,9 @@ public class MainActivity extends AppCompatActivity {
 //                Intent intent = new Intent(MainActivity.this, AboutActivity.class);
 //                startActivity(intent);
 //                return true;
+        }
+        if (item.getItemId() == R.id.upload) {
+            startActivity(new Intent(MainActivity.this, UploaderActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }

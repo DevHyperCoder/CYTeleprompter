@@ -31,14 +31,13 @@ public class FileEditActivity extends AppCompatActivity {
             public void onClick(View view) {
                 EditText editText = findViewById(R.id.edit_text_file);
                 EditText editTextTitle = findViewById(R.id.edit_text_title);
-                Toast.makeText(FileEditActivity.this, editText.getText().toString(), Toast.LENGTH_SHORT).show();
                 Date c = Calendar.getInstance().getTime();
                 SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
                 String formattedDate = df.format(c);
                 String data = formattedDate + ";" + editText.getText().toString();
                 fileOperator.writeToFile(editTextTitle.getText().toString(), data);
                 Log.d(TAG, "onClick: data = " + fileOperator.readFromFile(editTextTitle.getText().toString()));
-
+                Toast.makeText(FileEditActivity.this, "File \"" + editTextTitle.getText().toString() + "\" saved successfully", Toast.LENGTH_SHORT).show();
             }
         });
 

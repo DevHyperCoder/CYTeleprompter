@@ -44,31 +44,33 @@
                 android:text="@string/your_text_will_appear_this_big" />
 
 
-    <TextView
+            <TextView
 
-        android:id="@+id/num_lines_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20sp"
-        android:text="@string/enter_num_lines_to_scroll"
-        android:textSize="32sp"
-        tools:ignore="Autofill" />
+                android:id="@+id/num_lines_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20sp"
+                android:text="@string/enter_num_lines_to_scroll"
+                android:textSize="32sp"
+                tools:ignore="Autofill" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/enter_num_lines">
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/enter_num_lines">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/num_lines_edit_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="number"
-            android:textSize="32sp"
-            tools:ignore="Autofill" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/num_lines_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
 
-    </com.google.android.material.textfield.TextInputLayout>
+                    android:inputType="number"
+                    android:textSize="32sp"
+                    tools:ignore="Autofill" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
 
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/mirror_mode_switch"
@@ -79,15 +81,27 @@
                 android:textSize="32sp"
 
                 />
+            <!--            <com.google.android.material.switchmaterial.SwitchMaterial-->
+            <!--                android:id="@+id/theme_mode_switch"-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:checked="true"-->
+            <!--                android:text="@string/theme"-->
+            <!--                android:textOn="@string/dark_mode"-->
+            <!--                android:textOff="@string/light_mode"-->
+            <!--                android:textSize="32sp"-->
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/save_button"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_marginTop="30sp"
-        android:text="@string/save" />
+            <!--                />-->
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/save_button"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginTop="30sp"
+                android:text="@string/save" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

@@ -23,6 +23,7 @@ public class SettingsActivity extends AppCompatActivity {
     static final String NUM_LINES = "NUM_LINES";
     static final String FONT_SIZE = "FONT-SIZE";
     private boolean mirror;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,7 +34,7 @@ public class SettingsActivity extends AppCompatActivity {
         final SeekBar fontSizeEditText = findViewById(R.id.seekbar);
         final EditText numScrollLineEditText = findViewById(R.id.num_lines_edit_text);
         final SwitchMaterial mirrorModeToggleButton = findViewById(R.id.mirror_mode_switch);
-
+//        final SwitchMaterial themeSwitch = findViewById(R.id.theme_mode_switch);
         fontSizeEditText.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress,
@@ -66,15 +67,21 @@ public class SettingsActivity extends AppCompatActivity {
                 try {
                     int fontSize = fontSizeEditText.getProgress();
                     int numLinesToScroll = Integer.parseInt(numScrollLineEditText.getText().toString());
-
                     mirror = mirrorModeToggleButton.isChecked();
+//                    boolean theme = themeSwitch.isChecked();
+
                     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(SettingsActivity.this);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString(FONT_SIZE, String.valueOf(fontSize));
                     editor.putString(NUM_LINES, String.valueOf(numLinesToScroll));
                     editor.putBoolean(TeleprompterActivity.MIRROR_ENABLED, mirror);
+//                    if (theme) {
+//                        editor.putInt(MainActivity.THEME, MainActivity.DARK_MODE);
+//                    } else {
+//                        editor.putInt(MainActivity.THEME, MainActivity.LIGHT_MODE);
+//                    }
                     editor.apply();
-                    Toast.makeText(SettingsActivity.this, "Settings Saved Successfully" + mirror, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SettingsActivity.this, "Settings Saved Successfully", Toast.LENGTH_SHORT).show();
                 } catch (NumberFormatException numberFormatException) {
                     Log.e(MainActivity.TAG, "onClick: NumberFormatException", numberFormatException);
 
