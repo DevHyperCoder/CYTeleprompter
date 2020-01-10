@@ -16,10 +16,12 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 
+//
 class CustomAdapterTextViewAndCheckbox extends ArrayAdapter<UploadCheckboxModel> {
     private final Context mContext;
     private ArrayList<String> selectedStrings = new ArrayList<>();
     private int lastPosition = -1;
+
 
     CustomAdapterTextViewAndCheckbox(List<UploadCheckboxModel> data, Context context) {
         super(context, R.layout.upload_checkbox_row_item, data);
@@ -66,10 +68,8 @@ class CustomAdapterTextViewAndCheckbox extends ArrayAdapter<UploadCheckboxModel>
                 } else {
                     selectedStrings.remove(viewHolder.checkBox.getText().toString());
                 }
-
             }
         });
-
 
         // Return the completed view to render on screen
         return convertView;

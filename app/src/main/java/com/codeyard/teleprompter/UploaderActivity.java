@@ -7,6 +7,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ListView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +23,8 @@ import androidx.appcompat.widget.Toolbar;
 
 import static com.codeyard.teleprompter.MainActivity.TAG;
 
+// first: ca-app-pub-1367393062330218/2119831843
+//banner: ca-app-pub-1367393062330218/7265822099
 public class UploaderActivity extends AppCompatActivity {
     FileOperator fileOperator;
     CustomAdapterTextViewAndCheckbox customAdapterTextViewAndCheckbox;
@@ -37,6 +46,20 @@ public class UploaderActivity extends AppCompatActivity {
         customAdapterTextViewAndCheckbox = new CustomAdapterTextViewAndCheckbox(dataModelList, UploaderActivity.this);
         listView.setAdapter(customAdapterTextViewAndCheckbox);
 
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
+        //Ads:
+        InterstitialAd mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-1367393062330218/2119831843");
+        AdRequest adRequestInterstitial = new AdRequest.Builder().build();
+        mInterstitialAd.loadAd(adRequestInterstitial);
+
+        AdView mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
     }
 
     private void getInternalStorageFiles() {
